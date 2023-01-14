@@ -86,6 +86,7 @@
             this.textSourHerba = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.textSpicyHerba = new System.Windows.Forms.TextBox();
+            this.txtSearchTime = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.Map)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxPokemon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TeraType)).BeginInit();
@@ -769,12 +770,26 @@
             this.textSpicyHerba.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textSpicyHerba.TextChanged += new System.EventHandler(this.rewards_TextChanged);
             // 
+            // txtSearchTime
+            // 
+            this.txtSearchTime.BackColor = System.Drawing.Color.Black;
+            this.txtSearchTime.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtSearchTime.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.txtSearchTime.ForeColor = System.Drawing.SystemColors.ActiveCaption;
+            this.txtSearchTime.Location = new System.Drawing.Point(425, 502);
+            this.txtSearchTime.Name = "txtSearchTime";
+            this.txtSearchTime.PlaceholderText = "Search Time";
+            this.txtSearchTime.Size = new System.Drawing.Size(122, 25);
+            this.txtSearchTime.TabIndex = 152;
+            this.txtSearchTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // TeraRaidView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(5)))), ((int)(((byte)(25)))));
             this.ClientSize = new System.Drawing.Size(960, 540);
+            this.Controls.Add(this.txtSearchTime);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.textSpicyHerba);
             this.Controls.Add(this.label5);
@@ -893,5 +908,6 @@
         public TextBox textSourHerba;
         private Label label6;
         public TextBox textSpicyHerba;
+        public TextBox txtSearchTime;
     }
 }

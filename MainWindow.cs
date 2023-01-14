@@ -1105,6 +1105,10 @@ namespace RaidCrawler
             string time = String.Format("{0:00}:{1:00}:{2:00}",
             timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
             SearchTime.Text = "Search Time: " + time;
+            if (Settings.Default.CfgExperimentalView)
+            {
+                teraRaidView.txtSearchTime.Text = time;
+            }
         }
     }
 }
