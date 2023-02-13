@@ -5,6 +5,8 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RaidCrawler.Structures;
+using Newtonsoft.Json;
 
 namespace RaidCrawler.Structures
 {
@@ -18,13 +20,14 @@ namespace RaidCrawler.Structures
                      ControlStyles.AllPaintingInWmPaint |
                      ControlStyles.ResizeRedraw |
                      ControlStyles.UserPaint, true);
+            this.Font = new Font("Segoe UI", 9);
             BackColor = Color.FromArgb(100, 240, 240, 240);
             TextChanged += UserControl2_OnTextChanged;
-        }
+    }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            var backgroundBrush = new SolidBrush(Color.FromArgb(100, 240, 240, 240));
+            var backgroundBrush = new SolidBrush(BackColor);
             Graphics g = e.Graphics;
             g.FillRectangle(backgroundBrush, 0, 0, this.Width, this.Height);
             g.DrawString(this.Text, this.Font, new SolidBrush(ForeColor), 0, 0);
@@ -64,6 +67,7 @@ namespace RaidCrawler.Structures
 
     public class MyPanel : Panel
     {
+        public Color back { get; set; }
         public MyPanel()
         {
             SetStyle(ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
@@ -80,25 +84,35 @@ namespace RaidCrawler.Structures
 
     public class RoundLabel : Label
     {
+        private static readonly string configpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
+        private Config c = new();
+
         [Browsable(true)]
-        public Color backColor { get; set; }
+        public Color back { get; set; }
 
         public RoundLabel()
         {
             this.DoubleBuffered = true;
+            if (File.Exists(configpath))
+            {
+                c = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configpath)) ?? new Config();
+            }
+            else
+            {
+                c = new Config();
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            backColor = Color.FromArgb(125, 240, 240, 240);
-            Color backColor2 = Color.FromArgb(255, 240, 240, 240);
+            Color backColor = Color.FromArgb(125, back.R, back.G, back.B);
             base.OnPaint(e);
             using (var graphicsPath = _getRoundRectangle(this.ClientRectangle))
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (var brush = new SolidBrush(backColor))
                     e.Graphics.FillPath(brush, graphicsPath);
-                using (var pen = new Pen(backColor2, 1.0f))
+                using (var pen = new Pen(back, 1.0f))
                     e.Graphics.DrawPath(pen, graphicsPath);
                 TextRenderer.DrawText(e.Graphics, Text, this.Font, this.ClientRectangle, this.ForeColor);
             }
@@ -106,7 +120,7 @@ namespace RaidCrawler.Structures
 
         private GraphicsPath _getRoundRectangle(Rectangle rectangle)
         {
-            int cornerRadius = 15; // change this value according to your needs
+            int cornerRadius = 13; // change this value according to your needs
             int diminisher = 1;
             GraphicsPath path = new GraphicsPath();
             path.AddArc(rectangle.X, rectangle.Y, cornerRadius, cornerRadius, 180, 90);
@@ -115,6 +129,27 @@ namespace RaidCrawler.Structures
             path.AddArc(rectangle.X, rectangle.Y + rectangle.Height - cornerRadius - diminisher, cornerRadius, cornerRadius, 90, 90);
             path.CloseAllFigures();
             return path;
+        }
+    }
+
+    public class BetterButton : Button
+    {
+        protected override void OnPaint(PaintEventArgs pevent)
+        {
+            if (!this.DesignMode)
+            {
+                this.BackColor = this.Enabled ? Color.White : Color.Maroon;
+
+                base.OnPaint(pevent);
+
+                if (!this.Enabled)
+                {
+                    TextRenderer.DrawText(pevent.Graphics, this.Text, this.Font, this.ClientRectangle, this.ForeColor,
+                        this.BackColor);
+                }
+            }
+            else
+                base.OnPaint(pevent);
         }
     }
 }

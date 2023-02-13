@@ -1,5 +1,7 @@
+using CustomControls.RJControls;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
+using NLog.Targets;
 using PKHeX.Core;
 using PKHeX.Drawing;
 using PKHeX.Drawing.Misc.Properties;
@@ -137,7 +139,10 @@ namespace RaidCrawler
 
             if (Config.BackupAfterSave) Cheat.ForeColor = Color.BlueViolet;
             if (Config.ContinueAfterBackup) Cheat.ForeColor = Color.OrangeRed;
+            if (!Config.BackupAfterSave & !Config.ContinueAfterBackup) Cheat.ForeColor = Config.windowColor;
 
+            SetTheme(Config.Theme);
+            LoadTheme();
         }
 
         private void InputSwitchIP_Changed(object sender, EventArgs e)
@@ -366,7 +371,7 @@ namespace RaidCrawler
                 {
                     var map = GenerateMap(raid, teratype);
                     myPanel1.BackgroundImage = (Config.MapBackground ? map : null);
-                    
+
                     var param = Raid.GetParam(encounter);
                     var blank = new PK9
                     {
@@ -410,10 +415,11 @@ namespace RaidCrawler
                     Ability.Text = string.Empty;
                     SizeBox.Text = string.Empty;
                 }
-                
-                PID.BackColor = Raid.CheckIsShiny(raid, encounter) ? Color.FromArgb(125, 255, 215, 0) : DefaultColor;
-                IVs.BackColor = IVs.Text is "31/31/31/31/31/31" ? Color.FromArgb(125, 154, 205, 50) : DefaultColor;
-                EC.BackColor = (raid.EC % 100 == 0 && (encounter!.Species == 945 || encounter.Species == 206) ? Color.FromArgb(125, 0, 215, 255) : DefaultColor);
+
+                Color panel1Box = Color.FromArgb(125, Config.windowColor.R, Config.windowColor.G, Config.windowColor.B);
+                PID.BackColor = Raid.CheckIsShiny(raid, encounter) ? Color.FromArgb(125, 255, 215, 0) : panel1Box;
+                IVs.BackColor = IVs.Text is "31/31/31/31/31/31" ? Color.FromArgb(125, 154, 205, 50) : panel1Box;
+                EC.BackColor = (raid.EC % 100 == 0 && (encounter!.Species == 945 || encounter.Species == 206) ? Color.FromArgb(125, 0, 215, 255) : panel1Box);
             }
             else
             {
@@ -961,14 +967,14 @@ namespace RaidCrawler
             await Click(PLUS, 0_3000 + BaseDelay + JKSVTiming, token).ConfigureAwait(false);
             await Click(PLUS, 0_1000 + BaseDelay + JKSVTiming, token).ConfigureAwait(false);
             //Open the game
-            await Click(HOME, 0_2000 + BaseDelay + JKSVTiming, token).ConfigureAwait(false); 
+            await Click(HOME, 0_2000 + BaseDelay + JKSVTiming, token).ConfigureAwait(false);
             await Click(A, 0_1000 + BaseDelay + JKSVTiming, token).ConfigureAwait(false);
             await Click(A, 0_19000 + BaseDelay + JKSVTiming, token).ConfigureAwait(false);
             await Click(A, 0_17000 + BaseDelay + JKSVTiming, token).ConfigureAwait(false);
             await Click(X, 0_050 + BaseDelay + JKSVTiming, token).ConfigureAwait(false);
         }
 
-       
+
         private void ButtonStopCrawl_Click(object sender, EventArgs e)
         {
             stopRequested = true;
@@ -977,7 +983,7 @@ namespace RaidCrawler
 
         private async void ButtonAdvanceDate_Click(object sender, EventArgs e)
         {
-            Cheater:
+        Cheater:
             if (SwitchConnection.Connected)
             {
                 SearchTimer.Start();
@@ -1013,8 +1019,12 @@ namespace RaidCrawler
                 {
                     stopwatch.Stop();
                     var timeSpan = stopwatch.Elapsed;
-                    string time = String.Format("{0:00}:{1:00}:{2:00}",
-                    timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+                    var timeEmpty = new TimeSpan(0, 0, 0, 0);
+                    string time = string.Empty;
+                    if (((int)timeSpan.TotalDays) != timeEmpty.TotalDays) { time = timeSpan.ToString(@"d\ %h\:mm\:ss"); }
+                    else if (((int)timeSpan.TotalHours) != timeEmpty.TotalHours) { time = timeSpan.ToString(@"%h\:mm\:ss"); }
+                    else if (((int)timeSpan.TotalMinutes) != timeEmpty.TotalMinutes) { time = timeSpan.ToString(@"%m\:ss"); }
+                    else { time = timeSpan.ToString(@"%s"); }
                     var encounter = Encounters[0];
                     var raid = Raids[0];
                     if (Config.PlaySound) System.Media.SystemSounds.Asterisk.Play();
@@ -1096,9 +1106,9 @@ namespace RaidCrawler
             {
                 DaySkipStreak = 0;
             }
-                
+
             DaySkipSuccessRate.Text = $"Skip Rate: {DaySkipSuccess}/{DaySkipTries}     Total Miss: {DaySkipTries - DaySkipSuccess}     Streak: {DaySkipStreak}";
-            
+
             DaySkipShiny += Enumerable.Range(0, Raids.Count).Where(i => Raid.CheckIsShiny(Raids[i], Encounters[i])).Count();
             ShinyCount.Text = $"Total Shinies Found: {DaySkipShiny}";
 
@@ -1145,14 +1155,14 @@ namespace RaidCrawler
             Encounters.Clear();
             RewardsList.Clear();
             index = 0;
-            
+
             ConnectionStatusText.Text = "Reading raid block";
             var Data = await SwitchConnection.ReadBytesAbsoluteAsync(offset + RaidBlock.HEADER_SIZE, (int)(RaidBlock.SIZE - RaidBlock.HEADER_SIZE), token);
             Raid raid;
             var count = Data.Length / Raid.SIZE;
             HashSet<int> possible_groups = new HashSet<int>();
             if (Raid.DistTeraRaids != null)
-            { 
+            {
                 foreach (TeraDistribution e in Raid.DistTeraRaids)
                 {
                     if (TeraDistribution.AvailableInGame(e.Entity, Config.Game))
@@ -1461,8 +1471,13 @@ namespace RaidCrawler
         private void SearchTimer_Tick(object sender, EventArgs e)
         {
             var timeSpan = stopwatch.Elapsed;
-            string time = String.Format("{0:00}:{1:00}:{2:00}",
-            timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+            var timeEmpty = new TimeSpan(0, 0, 0, 0);
+            string time = string.Empty;
+            if (((int)timeSpan.TotalDays) != timeEmpty.TotalDays) { time = timeSpan.ToString(@"d\ %h\:mm\:ss"); }
+            else if (((int)timeSpan.TotalHours) != timeEmpty.TotalHours) { time = timeSpan.ToString(@"%h\:mm\:ss"); }
+            else if (((int)timeSpan.TotalMinutes) != timeEmpty.TotalMinutes) { time = timeSpan.ToString(@"%m\:ss"); }
+            else { time = timeSpan.ToString(@"%s"); }
+
             SearchTime.Text = "Search Time: " + time;
             if (Config.StreamerView)
             {
@@ -1490,7 +1505,10 @@ namespace RaidCrawler
 
         private void CopyAnnounce_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(NotificationHandler.GeneratePasteAnnounce(Config, Encounters[index], Raids[index], RewardsList[index]));
+            if (ModifierKeys == Keys.Shift)
+                Clipboard.SetText(NotificationHandler.GenerateRaidBot(true, Config, Encounters[index], Raids[index], RewardsList[index]));
+            else
+                Clipboard.SetText(NotificationHandler.GenerateRaidBot(false, Config, Encounters[index], Raids[index], RewardsList[index]));
         }
 
         private async void ButtonSceenState_Click(object sender, EventArgs e)
@@ -1504,8 +1522,8 @@ namespace RaidCrawler
         {
             if (ModifierKeys != Keys.Shift)
                 return;
-            if (!Config.BackupAfterSave & !Config.ContinueAfterBackup) {Config.BackupAfterSave = true;}
-            else if (Config.BackupAfterSave & !Config.ContinueAfterBackup) {Config.ContinueAfterBackup = true;}
+            if (!Config.BackupAfterSave & !Config.ContinueAfterBackup) { Config.BackupAfterSave = true; }
+            else if (Config.BackupAfterSave & !Config.ContinueAfterBackup) { Config.ContinueAfterBackup = true; }
             else if (Config.BackupAfterSave & Config.ContinueAfterBackup)
             {
                 Config.BackupAfterSave = false;
@@ -1518,10 +1536,131 @@ namespace RaidCrawler
             }
             else
             {
-                Cheat.ForeColor = Color.FromArgb(255, 240 , 240, 240);
+                Cheat.ForeColor = Config.windowColor;
             }
 
             if (Config.ContinueAfterBackup) Cheat.ForeColor = Color.OrangeRed;
+        }
+
+        public void SetTheme(int index)
+        {
+            //Theme definitions
+            //Default
+            Config.Theme = index;
+            if (index == 0)
+            {
+                Config.windowColor = Color.FromArgb(255, 240, 240, 240);
+                Config.textColor = Color.Black;
+                Config.disabledText = Color.LightSlateGray;
+                Config.textBorder = Color.FromArgb(255, 240, 240, 240);
+                Config.buttonBackgroundColor = Color.FromArgb(255, 253, 253, 253);
+                Config.buttonDisabledBackgroundColor = Color.FromArgb(255, 249, 249, 249);
+                Config.buttonBorderColor = Color.FromArgb(255, 186, 186, 186);
+                //Config.buttonDisabledBorderColor = Color.FromArgb(255, 233, 233, 233);
+                Config.boxColor = Color.White;
+            }
+            //Dark
+            else if (index == 1)
+            {
+                Config.windowColor = Color.FromArgb(255, 54, 57, 63);
+                Config.textColor = Color.White;
+                Config.disabledText = Color.LightSlateGray;
+                Config.textBorder = Color.FromArgb(255, 54, 57, 63);
+                Config.buttonBackgroundColor = Color.FromArgb(255, 47, 49, 54);
+                Config.buttonDisabledBackgroundColor = Color.FromArgb(255, 67, 69, 74);
+                Config.buttonBorderColor = Color.FromArgb(255, 139, 154, 162);
+                Config.boxColor = Color.FromArgb(255, 255, 80, 255);
+            }
+            SaveConfig();
+        }
+    
+
+        public void LoadTheme()
+        { 
+            //Load it
+            this.BackColor = Config.windowColor;
+            this.ForeColor = Config.textColor;
+            Color panel1Button = Color.FromArgb(125, Config.buttonBackgroundColor.R, Config.buttonBackgroundColor.G, Config.buttonBackgroundColor.B);
+            Color panel1Box = Color.FromArgb(125, Config.windowColor.R, Config.windowColor.G, Config.windowColor.B);
+            /*foreach (Panel p in this.Controls)
+            {
+               
+            }*/
+            foreach (Control p in myPanel1.Controls)
+            {
+                if (p is RJButton)
+                {
+                    RJButton rj = (RJButton)p;
+                    rj.BackgroundColor = rj.Enabled ? panel1Button : Config.buttonDisabledBackgroundColor;
+                    rj.BorderColor = rj.Enabled ? Config.buttonBorderColor : Config.buttonBorderColor;
+                    rj.TextEnabledColor = Config.textColor;
+                    rj.TextDisabledColor = Config.disabledText;
+                    //p.BackColor = panel1Button;
+                    //p.ForeColor = Config.textColor;
+                }
+                if (p is TextBox)
+                {
+                    p.BackColor = panel1Box;
+                    p.ForeColor = Config.textColor;
+                }
+                if (p is RoundLabel)
+                {
+                    RoundLabel rl = (RoundLabel)p;
+                    rl.back = Config.windowColor;
+                    p.ForeColor = Config.textColor;
+                }
+            }
+            foreach (Control p in myPanel2.Controls)
+            {
+                
+            }
+            foreach (Control p in myPanel3.Controls)
+            {
+                if (p is RJButton)
+                {
+                    RJButton rj = (RJButton)p;
+                    rj.BackgroundColor = rj.Enabled ? Config.buttonBackgroundColor : Config.buttonDisabledBackgroundColor;
+                    rj.BorderColor = rj.Enabled ? Config.buttonBorderColor : Config.buttonBorderColor;
+                    rj.TextEnabledColor = Config.textColor;
+                    rj.TextDisabledColor = Config.disabledText;
+                    //rj.TextColor = rj.Enabled ? Config.textColor : Config.disabledText;
+
+                    //p.BackColor = Config.buttonBackgroundColor;
+                    //p.ForeColor = Config.textColor;
+                }
+                if (p is TextBox)
+                {
+                    p.BackColor = Config.boxColor;
+                    p.ForeColor = Config.textColor;
+                }
+                if (p is ComboBox)
+                {
+                    p.BackColor = Config.boxColor;
+                    p.ForeColor = Config.textColor;
+                }
+            }
+            foreach (Control p in panel2.Controls)
+            {
+                if (p is RJButton)
+                {
+                    RJButton rj = (RJButton)p;
+                    rj.BackgroundColor = rj.Enabled ? Config.buttonBackgroundColor : Config.buttonDisabledBackgroundColor;
+                    rj.BorderColor = rj.Enabled ? Config.buttonBorderColor : Config.buttonBorderColor;
+                    rj.TextEnabledColor = Config.textColor;
+                    rj.TextDisabledColor = Config.disabledText;
+                    //rj.TextColor = rj.Enabled ? Config.textColor : Config.disabledText;
+                    //p.BackColor = Config.buttonBackgroundColor;
+                    //p.ForeColor = Config.textColor;
+                }
+                if (p is ComboBox)
+                {
+                    p.BackColor = Config.boxColor;
+                    p.ForeColor = Config.textColor;
+                }
+            }
+            Cheat.ForeColor = Config.windowColor;
+            LabelIsEvent.ForeColor = Color.FromArgb(255, 100, 120, 255);
+            //ButtonConnect.back = Color.Blue;
         }
     }
 }

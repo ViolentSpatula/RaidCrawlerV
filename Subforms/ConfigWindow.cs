@@ -53,11 +53,14 @@ namespace RaidCrawler.Subforms
 
             denToggle.Checked = c.ToggleDen;
 
+            GifImage.Checked = c.GifImage;
             EnableEmoji.Checked = c.EnableEmoji;
             CopyEmoji.Checked = c.CopyEmoji;
 
             ExperimentalView.Checked = c.StreamerView;
             MapBackground.Checked = c.MapBackground;
+
+            Theme.SelectedIndex = c.Theme;
         }
 
         /*private DataTable EmojiLoad(Dictionary<string, string> emoji)
@@ -122,13 +125,14 @@ namespace RaidCrawler.Subforms
             c.IVsSpacer = IVspacer.Text;
             c.VerboseIVs = IVverbose.Checked;
 
+            c.GifImage = GifImage.Checked;
             c.EnableEmoji = EnableEmoji.Checked;
             c.CopyEmoji= CopyEmoji.Checked;
 
             c.ToggleDen = denToggle.Checked;
             c.StreamerView = ExperimentalView.Checked;
             c.MapBackground = MapBackground.Checked;
-			
+
             string output = JsonConvert.SerializeObject(c);
             using StreamWriter sw = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"));
             sw.Write(output);
@@ -162,6 +166,14 @@ namespace RaidCrawler.Subforms
             {
                 config.Show();
             }
+        }
+
+        private void Theme_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var mainForm = Application.OpenForms.OfType<MainWindow>().Single();
+            mainForm.SetTheme(Theme.SelectedIndex);
+            mainForm.LoadTheme();
+            //mainForm.Invalidate();
         }
     }
 }

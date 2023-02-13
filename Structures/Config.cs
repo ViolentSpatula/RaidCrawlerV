@@ -47,6 +47,7 @@ namespace RaidCrawler.Structures
         public decimal JKSVTiming { get; set; } = 0;
 
         // Webhook
+        public bool GifImage{ get; set; } = true;
         public bool CopyEmoji { get; set; } = false;
         public bool EnableEmoji { get; set; } = true;
         public bool VerboseIVs { get; set; } = false;
@@ -56,7 +57,7 @@ namespace RaidCrawler.Structures
         public Dictionary<string, string> Emoji { get; set; } = new Dictionary<string, string>
         {
             { "Bug", "<:tBug:1060235283976699995>" }, { "Dark", "<:tDark:1060235285394366564>" }, { "Dragon", "<:tDragon:1060235286879141917>"}, { "Electric", "<:tElectric:1060235288691093566>"},
-            { "Fairy", "<:tFairy:1060235282127003730>"}, { "Fighting", "<:tFighting:1060235325705822309>"}, { "Fire", "<:tFlying:1060235328717336646>"}, { "Flying", "<:tFlying:1060235328717336646>"},
+            { "Fairy", "<:tFairy:1060235282127003730>"}, { "Fighting", "<:tFighting:1060235325705822309>"}, { "Fire", "<:tFire:1060235326834102382>"}, { "Flying", "<:tFlying:1060235328717336646>"},
             { "Ghost", "<:tGhost:1060235329665241129>"}, { "Grass", "<:tGrass:1060235303828332655>"}, { "Ground", "<:tGround:1060235355867058308>"}, { "Ice", "<:tIce:1060235356710109246>"},
             { "Normal", "<:tNormal:1060235360334008331>"}, { "Poison", "<:tPoison:1060235353732161569>"}, { "Psychic", "<:tPsychic:1060235385235570811>"}, { "Rock", "<:tRock:1060235386279972906>"},
             { "Steel", "<:tSteel:1060235358358491147>"}, { "Water", "<:tWater:1060235383411056640>"}, { "Male", "<:male:1060738367274352730>"}, { "Female", "<:female:1060738368541048965>"},
@@ -75,9 +76,14 @@ namespace RaidCrawler.Structures
         public string InstanceName { get; set; } = string.Empty;
 
         // Theme
+        public int Theme { get; set; } = 0;
         public Color windowColor { get; set; } = Color.FromArgb(255, 240, 240, 240);
-        public Color textColor { get; set; } = Color.Blue;
-        public Color buttColor { get; set; } = Color.FromArgb(255, 0, 0, 253);
-
+        public Color textColor { get; set; } = Color.Orange;
+        public Color disabledText { get; set; } = Color.RebeccaPurple;
+        public Color textBorder { get; set; } = Color.White;
+        public Color buttonDisabledBackgroundColor { get; set; } = Color.FromArgb(255, 67, 69, 74);
+        public Color buttonBackgroundColor { get; set; } = Color.FromArgb(255, 47, 49, 54);
+        public Color buttonBorderColor { get; set; } = Color.FromArgb(255, 139, 154, 162);
+        public Color boxColor { get; set; } = Color.FromArgb(255, 255, 80, 255);
     }
 }

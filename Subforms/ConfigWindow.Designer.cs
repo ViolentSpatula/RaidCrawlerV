@@ -65,6 +65,8 @@
             this.ExperimentalView = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.Theme = new System.Windows.Forms.ComboBox();
+            this.SaveAfterFind = new System.Windows.Forms.CheckBox();
             this.MapBackground = new System.Windows.Forms.CheckBox();
             this.CopyEmoji = new System.Windows.Forms.CheckBox();
             this.InstanceName = new System.Windows.Forms.TextBox();
@@ -76,6 +78,8 @@
             this.UseOvershoot = new System.Windows.Forms.CheckBox();
             this.label15 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.WebhookImageLabel = new System.Windows.Forms.Label();
+            this.GifImage = new System.Windows.Forms.CheckBox();
             this.EmojiConfig = new System.Windows.Forms.Button();
             this.labelWebhooks = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
@@ -91,7 +95,6 @@
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.EnableEmoji = new System.Windows.Forms.CheckBox();
-            this.SaveAfterFind = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.BaseDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SystemDDownPresses)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NavigateToSettings)).BeginInit();
@@ -528,6 +531,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.Theme);
             this.tabPage3.Controls.Add(this.SaveAfterFind);
             this.tabPage3.Controls.Add(this.MapBackground);
             this.tabPage3.Controls.Add(this.CopyEmoji);
@@ -542,6 +546,28 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "General";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // Theme
+            // 
+            this.Theme.FormattingEnabled = true;
+            this.Theme.Items.AddRange(new object[] {
+            "Default",
+            "Dark"});
+            this.Theme.Location = new System.Drawing.Point(3, 175);
+            this.Theme.Name = "Theme";
+            this.Theme.Size = new System.Drawing.Size(121, 23);
+            this.Theme.TabIndex = 46;
+            this.Theme.SelectedIndexChanged += new System.EventHandler(this.Theme_SelectedIndexChanged);
+            // 
+            // SaveAfterFind
+            // 
+            this.SaveAfterFind.AutoSize = true;
+            this.SaveAfterFind.Location = new System.Drawing.Point(3, 68);
+            this.SaveAfterFind.Name = "SaveAfterFind";
+            this.SaveAfterFind.Size = new System.Drawing.Size(182, 19);
+            this.SaveAfterFind.TabIndex = 45;
+            this.SaveAfterFind.Text = "Save game after match found";
+            this.SaveAfterFind.UseVisualStyleBackColor = true;
             // 
             // MapBackground
             // 
@@ -682,6 +708,8 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.WebhookImageLabel);
+            this.tabPage4.Controls.Add(this.GifImage);
             this.tabPage4.Controls.Add(this.EmojiConfig);
             this.tabPage4.Controls.Add(this.labelWebhooks);
             this.tabPage4.Controls.Add(this.label21);
@@ -703,6 +731,28 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Webhook";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // WebhookImageLabel
+            // 
+            this.WebhookImageLabel.AutoSize = true;
+            this.WebhookImageLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.WebhookImageLabel.Location = new System.Drawing.Point(8, 285);
+            this.WebhookImageLabel.Name = "WebhookImageLabel";
+            this.WebhookImageLabel.Size = new System.Drawing.Size(73, 15);
+            this.WebhookImageLabel.TabIndex = 48;
+            this.WebhookImageLabel.Text = "Image Style";
+            // 
+            // GifImage
+            // 
+            this.GifImage.AutoSize = true;
+            this.GifImage.Checked = true;
+            this.GifImage.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.GifImage.Location = new System.Drawing.Point(10, 303);
+            this.GifImage.Name = "GifImage";
+            this.GifImage.Size = new System.Drawing.Size(77, 19);
+            this.GifImage.TabIndex = 47;
+            this.GifImage.Text = "Gif Image";
+            this.GifImage.UseVisualStyleBackColor = true;
             // 
             // EmojiConfig
             // 
@@ -851,16 +901,6 @@
             this.EnableEmoji.Text = "Webhook Emoji";
             this.EnableEmoji.UseVisualStyleBackColor = true;
             // 
-            // SaveAfterFind
-            // 
-            this.SaveAfterFind.AutoSize = true;
-            this.SaveAfterFind.Location = new System.Drawing.Point(3, 68);
-            this.SaveAfterFind.Name = "SaveAfterFind";
-            this.SaveAfterFind.Size = new System.Drawing.Size(182, 19);
-            this.SaveAfterFind.TabIndex = 45;
-            this.SaveAfterFind.Text = "Save game after match found";
-            this.SaveAfterFind.UseVisualStyleBackColor = true;
-            // 
             // ConfigWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -964,5 +1004,8 @@
         private CheckBox CopyEmoji;
         private CheckBox MapBackground;
         private CheckBox SaveAfterFind;
+        private Label WebhookImageLabel;
+        private CheckBox GifImage;
+        private ComboBox Theme;
     }
 }
