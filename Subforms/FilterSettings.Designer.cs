@@ -75,6 +75,7 @@
             this.LabelBatchFilters = new System.Windows.Forms.Label();
             this.BatchFilters = new System.Windows.Forms.TextBox();
             this.SquareCheck = new System.Windows.Forms.CheckBox();
+            this.RareFormCheck = new CheckBox();
             this.SizeCheck = new System.Windows.Forms.CheckBox();
             this.SizeBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.Form)).BeginInit();
@@ -739,6 +740,16 @@
             this.SizeBox.Size = new System.Drawing.Size(121, 23);
             this.SizeBox.TabIndex = 37;
             // 
+            // RareFormCheck
+            // 
+            this.RareFormCheck.AutoSize = true;
+            this.RareFormCheck.Location = new System.Drawing.Point(15, 336);
+            this.RareFormCheck.Name = "RareFormCheck";
+            this.RareFormCheck.Size = new System.Drawing.Size(85, 19);
+            this.RareFormCheck.TabIndex = 39;
+            this.RareFormCheck.Text = "Rare Form?";
+            this.RareFormCheck.UseVisualStyleBackColor = true;
+            // 
             // FilterSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -747,6 +758,7 @@
             this.Controls.Add(this.SizeCheck);
             this.Controls.Add(this.SizeBox);
             this.Controls.Add(this.SquareCheck);
+            this.Controls.Add(this.RareFormCheck);
             this.Controls.Add(this.BatchFilters);
             this.Controls.Add(this.LabelBatchFilters);
             this.Controls.Add(this.GenderCheck);
@@ -848,5 +860,6 @@
         private CheckBox SquareCheck;
         private CheckBox SizeCheck;
         private ComboBox SizeBox;
+        private CheckBox RareFormCheck;
     }
 }

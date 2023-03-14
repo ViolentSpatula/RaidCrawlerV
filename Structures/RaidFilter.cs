@@ -1,4 +1,6 @@
 ﻿using PKHeX.Core;
+using System.Reflection.Metadata.Ecma335;
+
 namespace RaidCrawler.Structures
 {
     public class RaidFilter
@@ -10,6 +12,7 @@ namespace RaidCrawler.Structures
         public int StarsComp { get; set; }
         public bool Shiny { get; set; }
         public bool Square { get; set; }
+        public bool RareForm { get; set; }
         public int? Nature { get; set; }
         public int? TeraType { get; set; }
         public int? Gender { get; set; }
@@ -104,6 +107,13 @@ namespace RaidCrawler.Structures
             };
             Encounter9RNG.GenerateData(blank, param, EncounterCriteria.Unrestricted, raid.Seed);
             return (Raid.CheckIsShiny(raid, encounter) && ShinyExtensions.IsSquareShinyExist(blank)) == true;
+        }
+
+        public bool IsRareFormSatisfied(ITeraRaid? encounter, Raid raid)
+        {
+            if (RareForm == false)
+                return true;
+            return raid.EC % 100 == 0;
         }
 
         public bool IsTeraTypeSatisfied(Raid raid)
@@ -262,7 +272,8 @@ namespace RaidCrawler.Structures
         {
             return Enabled && IsIVsSatisfied(encounter, raid) && IsShinySatisfied(encounter, raid) && IsSquareSatisfied(encounter, raid) && IsSpeciesSatisfied(encounter) && IsFormSatisfied(encounter)
                 && IsNatureSatisfied(encounter, raid) && IsStarsSatisfied(encounter) && IsTeraTypeSatisfied(raid)
-                && IsRewardsSatisfied(encounter, raid, SandwichBoost) && IsGenderSatisfied(encounter, raid) && IsSizeSatisfied(encounter, raid) && IsBatchFilterSatisfied(encounter, raid);
+                && IsRewardsSatisfied(encounter, raid, SandwichBoost) && IsGenderSatisfied(encounter, raid) && IsSizeSatisfied(encounter, raid) && IsBatchFilterSatisfied(encounter, raid)
+                && IsRareFormSatisfied(encounter, raid);
         }
 
         public bool FilterSatisfied(List<ITeraRaid?> Encounters, List<Raid> Raids, int SandwichBoost)

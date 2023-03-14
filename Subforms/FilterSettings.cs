@@ -67,6 +67,7 @@ namespace RaidCrawler.Subforms
             SizeCheck.Checked = filter.Size != null;
             ShinyCheck.Checked = filter.Shiny;
             SquareCheck.Checked = filter.Square;
+            RareFormCheck.Checked = filter.RareForm;
             CheckRewards.Checked = filter.RewardItems != null && filter.RewardsCount > 0;
             Rewards.Text = filter.RewardItems != null ? string.Join(",", filter.RewardItems.Select(x => x.ToString()).ToArray())
                                                         : "645,795,1606,1904,1905,1906,1907,1908";
@@ -152,6 +153,7 @@ namespace RaidCrawler.Subforms
             filter.Size = SizeCheck.Checked ? SizeBox.SelectedIndex : null;
             filter.Shiny = ShinyCheck.Checked;
             filter.Square = SquareCheck.Checked;
+            filter.RareForm = RareFormCheck.Checked;
             filter.IVBin = ivbin;
             filter.IVVals = ivvals;
             filter.IVComps = ivcomps;
